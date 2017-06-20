@@ -1,0 +1,46 @@
+#!/usr/bin/python
+
+import sys, time, re, os, uinput
+import uinput
+import subprocess
+
+
+#os.system("killall -9 cec-client");
+
+exactMatch = re.compile(r'key released: (\w+)', flags=re.IGNORECASE)
+DEVNULL = open(os.devnull, 'wb')
+with uinput.Device([uinput.KEY_UP, uinput.KEY_LEFT, uinput.KEY_RIGHT, uinput.KEY_DOWN, uinput.KEY_ENTER, uinput.KEY_BACKSPACE, uinput.KEY_TAB, uinput.KEY_CAPSLOCK, uinput.KEY_PAGEUP, uinput.KEY_PAGEDOWN]) as device:
+        proc = subprocess.Popen(['/usr/bin/cec-client','-o','Pipplware',''],stdout=subprocess.PIPE,stderr=DEVNULL)
+        for line in iter(proc.stdout.readline,''):
+                for key in exactMatch.findall(line.rstrip()):
+                        if key == "up":
+                                device.emit_click(uinput.KEY_UP)
+
+                        elif key == "left":
+                                device.emit_click(uinput.KEY_LEFT)
+
+                        elif key == "right":
+                                device.emit_click(uinput.KEY_RIGHT)
+
+                        elif key == "down":
+                                device.emit_click(uinput.KEY_DOWN)
+
+			elif key == "enter" or key == "select":
+				device.emit_click(uinput.KEY_ENTER)
+
+			elif key == "exit" or key == "return":
+				device.emit_click(uinput.KEY_BACKSPACE)
+			
+			elif key == "F4":
+                                device.emit_click(uinput.KEY_TAB)
+
+                        elif key == "F1":
+                                device.emit_click(uinput.KEY_CAPSLOCK)
+
+			elif key == "F3":
+                                device.emit_click(uinput.KEY_PAGEUP)
+
+                        elif key == "F2":
+                                device.emit_click(uinput.KEY_PAGEDOWN)
+	
+DEVNULL.close()

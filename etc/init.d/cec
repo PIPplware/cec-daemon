@@ -1,0 +1,53 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          CEC Daemon
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: CEC Daemon
+# Description:       CEC Daemon
+### END INIT INFO
+
+# Author: Michael Gorven <michael@gorven.za.net>
+
+# PATH should only include /usr/* if it runs after the mountnfs.sh script
+PATH=/sbin:/usr/sbin:/bin:/usr/bin
+DESC="CEC Daemon"
+NAME=cec-daemon
+STARTAS=/usr/bin/cec-daemon
+DAEMON=/bin/sh
+DAEMON_ARGS=""
+PIDFILE=/var/run/$NAME.pid
+SCRIPTNAME=/etc/init.d/$NAME
+
+# Load the VERBOSE setting and other rcS variables
+. /lib/init/vars.sh
+
+# Define LSB log_* functions.
+# Depend on lsb-base (>= 3.2-14) to ensure that this file is present
+# and status_of_proc is working.
+. /lib/lsb/init-functions
+
+
+case "$1" in
+  start)
+  [ "$VERBOSE" != no ] && log_daemon_msg "Starting $DESC" "$NAME"
+  /usr/bin/python /usr/bin/cec-daemon &
+  ;;
+  stop)
+  [ "$VERBOSE" != no ] && log_daemon_msg "Stopping $DESC" "$NAME"
+  sudo killall -9 cec-client
+  ;;
+  status)
+  status_of_proc "$DAEMON" "$NAME" && exit 0 || exit $?
+  ;;
+  restart|force-reload)
+  ;;
+  *)
+  echo "Usage: $SCRIPTNAME {start|stop|status|restart|force-reload}" >&2
+  exit 3
+  ;;
+esac
+
+:
